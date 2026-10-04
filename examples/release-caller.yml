@@ -1,0 +1,57 @@
+# EXAMPLE ONLY: engine workflow must be implemented first.
+# Copy into the APP repo at .github/workflows/release.yml.
+name: Flutter Release
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [dev, prod]
+        default: dev
+      platform:
+        type: choice
+        options: [android, ios, all]
+        default: android
+      artifact:
+        type: choice
+        options: [apk, aab, ipa, all]
+        default: apk
+      version_type:
+        type: choice
+        options: [patch, minor, major, custom]
+        default: patch
+      custom_version:
+        type: string
+        default: ''
+      channel:
+        type: choice
+        options: [dev, alpha, beta, rc, production]
+        default: dev
+      distribution:
+        type: choice
+        options: [build-only, firebase]
+        default: build-only
+      notifications:
+        type: choice
+        options: [config, telegram, whatsapp, both, none]
+        default: config
+permissions:
+  contents: write # Needed by central finalize job; narrow inside engine jobs.
+concurrency:
+  group: flutter-release-${{ github.repository }}
+  cancel-in-progress: false
+jobs:
+  release:
+    uses: YOUR_ORG/flutter-cicd/.github/workflows/flutter-release.yml@ENGINE_SHA
+    with:
+      environment: ${{ inputs.environment }}
+      platform: ${{ inputs.platform }}
+      artifact: ${{ inputs.artifact }}
+      version_type: ${{ inputs.version_type }}
+      custom_version: ${{ inputs.custom_version }}
+      channel: ${{ inputs.channel }}
+      distribution: ${{ inputs.distribution }}
+      notifications: ${{ inputs.notifications }}
+      config_path: cicd/project.yaml
+      engine_ref: ENGINE_SHA
+    secrets: inherit # Supported within same organization/user; see setup.md.

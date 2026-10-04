@@ -1,0 +1,48 @@
+# Proposed config contract; requires central engine implementation.
+schema_version: 1
+project:
+  name: Herbandoil
+  flutter_version: REPLACE_WITH_EXACT_FLUTTER_VERSION
+  java_version: '17' # Match the project's Gradle/AGP requirements.
+environments:
+  dev:
+    flavor: development
+    entrypoint: lib/main_dev.dart
+    domain: ''
+    android_app_id: com.example.app.dev
+    ios_bundle_id: com.example.app.dev
+    firebase_android_app_id: REPLACE_DEV_ANDROID_FIREBASE_APP_ID
+    firebase_ios_app_id: REPLACE_DEV_IOS_FIREBASE_APP_ID
+    tester_groups: [qa]
+    ios_export_options: ios/ExportOptions.dev.plist
+  prod:
+    flavor: production
+    entrypoint: lib/main_prod.dart
+    domain: https://api.example.com
+    android_app_id: com.example.app
+    ios_bundle_id: com.example.app
+    firebase_android_app_id: REPLACE_PROD_ANDROID_FIREBASE_APP_ID
+    firebase_ios_app_id: REPLACE_PROD_IOS_FIREBASE_APP_ID
+    tester_groups: [release-team]
+    ios_export_options: ios/ExportOptions.prod.plist
+versioning:
+  strategy: semantic
+  bootstrap: pubspec
+  source: release-manifest
+  native_version_format: X.Y.Z
+  build_number_baseline: 82
+  channels: [dev, alpha, beta, rc, production]
+distribution:
+  firebase_android_artifact: apk
+notifications:
+  dev:
+    telegram: {enabled: true, on_success: true, on_failure: true}
+    whatsapp: {enabled: false, on_success: true, on_failure: true}
+  prod:
+    telegram: {enabled: true, on_success: true, on_failure: true}
+    whatsapp: {enabled: true, on_success: true, on_failure: true}
+  whatsapp_templates:
+    graph_api_version: REPLACE_WITH_SUPPORTED_GRAPH_API_VERSION
+    success: cicd_release_success
+    failure: cicd_release_failure
+    language: ar
